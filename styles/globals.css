@@ -5,18 +5,23 @@ body {
 	font-family: 'Playfair Display', serif;
 	font-weight: 400;
 	color: #333;
+	background-color: #ffe156;
+
 	/* font-style: italic; */
 }
 body {
 	height: 100vh;
 }
 
-/* Avoid Chrome to see Safari hack */
 @supports (-webkit-touch-callout: none) {
 	body {
-		/* The hack for Safari */
 		height: -webkit-fill-available;
 	}
+}
+body > div:first-child,
+div#__next,
+div#__next > div {
+	height: 100%;
 }
 a {
 	color: inherit;
