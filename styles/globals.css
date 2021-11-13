@@ -4,10 +4,20 @@ body {
 	margin: 0;
 	font-family: 'Playfair Display', serif;
 	font-weight: 400;
-  color: #333;
+	color: #333;
 	/* font-style: italic; */
 }
+body {
+	height: 100vh;
+}
 
+/* Avoid Chrome to see Safari hack */
+@supports (-webkit-touch-callout: none) {
+	body {
+		/* The hack for Safari */
+		height: -webkit-fill-available;
+	}
+}
 a {
 	color: inherit;
 	/* text-decoration: none; */
@@ -17,8 +27,8 @@ a {
 	box-sizing: border-box;
 }
 a,
-button{
-  font-family: 'Playfair Display', serif;
-  font-weight: 400;
-  color: #333;
+button {
+	font-family: 'Playfair Display', serif;
+	font-weight: 400;
+	color: #333;
 }
