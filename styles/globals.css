@@ -6,11 +6,14 @@ body {
 	font-weight: 400;
 	color: #333;
 	background-color: #ffe156;
-
+	-webkit-user-select: none;  /* Chrome all / Safari all */
+	-moz-user-select: none;     /* Firefox all */
+	-ms-user-select: none;      /* IE 10+ */
+	user-select: none;          /* Likely future */    
 	/* font-style: italic; */
 }
 body {
-	height: 100vh;
+	height: 90vh;
 }
 
 @supports (-webkit-touch-callout: none) {

@@ -16,7 +16,7 @@ const Main = styled.main`
 	align-items: center;
 	padding: 1rem;
 	height: 100%;
-	overflow-y: auto;
+	// overflow-y: auto;
 	overflow: hidden;
 `;
 const Facade = styled.div`
@@ -56,6 +56,7 @@ const ReplayButton = styled.a`
 		align-self: center;
     transition: all 0.3s ease-out;
 	}
+  sub,
 	sup {
 		font-size: 0.5em;
 	}
@@ -80,11 +81,9 @@ const ButtonBase = styled.button`
 	will-change: transform;
 	transition: all 0.3s ease-in-out;
 	&:hover {
-		transform: scale(1.5);
-	}
-	&:focus {
-		background-color: #333;
+    background-color: #333;
 		color: #fff;
+    transform: scale(1.5);
 	}
 `;
 const PrevButton = styled(ButtonBase)`
@@ -157,8 +156,9 @@ export default function Home({ questions }) {
 					<ReplayButton onClick={replayQuestion}>
 						<Image src="/replay.svg" height={125} width={125} />
 						<span>
-							<sup>{replayTime}</sup>replay?
+              {replayTime === 0 ? `play` : `replayed`}
 						</span>
+            <span><sup>{replayTime} time</sup></span>
 					</ReplayButton>
 				</Facade>
 				<Controls>
