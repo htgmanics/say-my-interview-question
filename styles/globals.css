@@ -13,7 +13,7 @@ body {
 	/* font-style: italic; */
 }
 body {
-	height: 90vh;
+	height: 100vh;
 }
 
 @supports (-webkit-touch-callout: none) {

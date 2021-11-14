@@ -24,7 +24,7 @@ const Facade = styled.div`
 	flex: 2;
 `;
 const Number = styled.div`
-	margin-top: -3rem;
+	margin-top: -3.5rem;
 	font-size: 10rem;
 	line-height: 1;
 `;
