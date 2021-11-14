@@ -5,9 +5,7 @@ import Image from 'next/image';
 import questionData from '../data/data.json';
 
 const shuffledArray = (array) => array.sort(() => 0.5 - Math.random());
-const Container = styled.div`
-  background-color: #ffe156;
-`;
+const Container = styled.div`background-color: #ffe156;`;
 
 const Main = styled.main`
 	position: relative;
@@ -22,6 +20,9 @@ const Main = styled.main`
 const Facade = styled.div`
 	position: relative;
 	flex: 2;
+	height: 100%;
+	overflow-y: auto;
+	overflow-x: hidden;
 `;
 const Number = styled.div`
 	margin-top: -3.5rem;
@@ -54,13 +55,13 @@ const ReplayButton = styled.a`
 	span {
 		font-size: 1.25rem;
 		align-self: center;
-    transition: all 0.3s ease-out;
+		transition: all 0.3s ease-out;
 	}
-  sub,
+	sub,
 	sup {
 		font-size: 0.5em;
 	}
-  &:hover {
+	&:hover {
 		> span:first-child {
 			transform: rotate(60deg);
 		}
@@ -81,9 +82,9 @@ const ButtonBase = styled.button`
 	will-change: transform;
 	transition: all 0.3s ease-in-out;
 	&:hover {
-    background-color: #333;
+		background-color: #333;
 		color: #fff;
-    transform: scale(1.5);
+		transform: scale(1.5);
 	}
 `;
 const PrevButton = styled(ButtonBase)`
@@ -155,10 +156,10 @@ export default function Home({ questions }) {
 					<Question show={replayTime > 3}>{currentQuestion.title}</Question>
 					<ReplayButton onClick={replayQuestion}>
 						<Image src="/replay.svg" height={125} width={125} />
+						<span>{replayTime === 0 ? `play` : `replayed`}</span>
 						<span>
-              {replayTime === 0 ? `play` : `replayed`}
+							<sup>{replayTime} time</sup>
 						</span>
-            <span><sup>{replayTime} time</sup></span>
 					</ReplayButton>
 				</Facade>
 				<Controls>
