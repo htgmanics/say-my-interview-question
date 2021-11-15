@@ -16,7 +16,6 @@
   "devDependencies": {
     "eslint": "7",
     "eslint-config-next": "12.0.3",
-    "postcss-100vh-fix": "^1.0.2",
     "postcss-flexbugs-fixes": "^5.0.2",
     "postcss-preset-env": "^6.7.0"
   }
