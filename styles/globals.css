@@ -1,3 +1,6 @@
+:root {
+	--app-height: '100%';
+}
 html,
 body {
 	padding: 0;
@@ -6,25 +9,35 @@ body {
 	font-weight: 400;
 	color: #333;
 	background-color: #ffe156;
-	-webkit-user-select: none;  /* Chrome all / Safari all */
-	-moz-user-select: none;     /* Firefox all */
-	-ms-user-select: none;      /* IE 10+ */
-	user-select: none;          /* Likely future */    
+	-webkit-user-select: none; /* Chrome all / Safari all */
+	-moz-user-select: none; /* Firefox all */
+	-ms-user-select: none; /* IE 10+ */
+	user-select: none; /* Likely future */
 	/* font-style: italic; */
 }
+
+/* @media not all and(hover: hover) { */
+
+/* } */
+html,
 body {
-	height: 100vh;
+	height: 100vh; /* Use vh as a fallback for browsers that do not support Custom Properties */
+	height: calc(var(--vh, 1vh) * 100);
+}
+body {
+	/* height: 100vh; */
+	/* height: var (--app - height); */
 }
 
 @supports (-webkit-touch-callout: none) {
 	body {
-		height: -webkit-fill-available;
+		/* height: -webkit-fill-available; */
 	}
 }
 body > div:first-child,
 div#__next,
 div#__next > div {
-	height: 86vh;
+	height: 100%;
 }
 a {
 	color: inherit;
