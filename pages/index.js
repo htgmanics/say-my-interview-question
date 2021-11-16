@@ -3,6 +3,7 @@ import styled from 'styled-components';
 import Head from 'next/head';
 import Image from 'next/image';
 import questionData from '../data/data.json';
+import client from '../api/client';
 
 const shuffledArray = (array) => array.sort(() => 0.5 - Math.random());
 const Container = styled.div`background-color: #ffe156;`;
@@ -24,7 +25,7 @@ const Facade = styled.div`
 const Number = styled.div`
 	position: relative;
 	margin-top: -3.5rem;
-  margin-left: 0.75rem;
+	margin-left: 0.75rem;
 	font-size: 10rem;
 	line-height: 1;
 	&:before {
@@ -196,7 +197,7 @@ export default function Home({ questions }) {
 
 			<Main>
 				<Facade>
-					<Number>/{currentQuestion.id}</Number>
+					<Number>/{currentQuestion.number}</Number>
 					<Question show={replayTime >= MAX_NUM_REPLAY}>{currentQuestion.title}</Question>
 					{replayTime < MAX_NUM_REPLAY && (
 						<ReplayButton hide={false} onClick={replayQuestion}>
@@ -212,16 +213,29 @@ export default function Home({ questions }) {
 					<PrevButton onClick={prevQuestion}>\\ Prev</PrevButton>
 					<NextButton onClick={nextQuestion}>Next //</NextButton>
 				</Controls>
-				<audio ref={audioRef} src={`/audios/question-${currentQuestion.id}.mp3`} />
+				{/* <audio ref={audioRef} src={`/audios/question-${currentQuestion.id}.mp3`} /> */}
+				<audio ref={audioRef} src={currentQuestion.file} />
 			</Main>
 		</Container>
 	);
 }
 
 export async function getStaticProps() {
+	const query = `
+		*[_type == "post"]{
+			"id": _id,
+			"slug": slug.current,
+			"file": manuscript.asset->url,
+			"title": description
+		}
+	`;
+	const fetchedQuestions = await client.fetch(query);
+	const fetchedQuestionsWithNumber = fetchedQuestions.map((q, i) => ({ ...q, number: q.slug.split('-')[1]  }));
+	console.log(fetchedQuestionsWithNumber);
+
 	return {
 		props: {
-			questions: shuffledArray(questionData.data)
+			questions: shuffledArray(fetchedQuestionsWithNumber) // questionData.data)
 		}
 	};
 }
