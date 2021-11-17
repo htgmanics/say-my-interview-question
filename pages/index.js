@@ -4,6 +4,22 @@ import Head from 'next/head';
 import Image from 'next/image';
 import questionData from '../data/data.json';
 import client from '../api/client';
+// useWebAudio (audioRef)
+// rms setRms setState 
+// stream 
+// var audioCtx = new AudioContext();
+// var an = ac.createAnalyser();
+// source = audioCtx.createMediaStreamSource(stream);
+// source.connect(an);
+// 
+// var buffer = new Uint8Array(an.fftSize);
+// 
+// f(){ ... 
+//    setRms()
+// }
+// useRAF pass useCallBack( f() )
+// 
+// return {amplitude}
 
 const shuffledArray = (array) => array.sort(() => 0.5 - Math.random());
 const Container = styled.div`background-color: #ffe156;`;
