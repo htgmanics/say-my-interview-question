@@ -39,7 +39,7 @@ export const useWebAudio = (audio, userTriggered) => {
 			if (!analyser) return;
 			let tmpAmplitude = 0;
 			let amplitudeArray = new Uint8Array(analyser.frequencyBinCount);
-			
+
 			analyser.getByteTimeDomainData(amplitudeArray);
 
 			for (let i = 0; i < amplitudeArray.length; i++) {
@@ -58,5 +58,5 @@ export const useWebAudio = (audio, userTriggered) => {
 };
 
 export default React.forwardRef(function Audio({ src }, ref) {
-	return <audio ref={ref} src={src} />;
+	return <audio ref={ref} src={src} crossOrigin="anonymous" />;
 });
