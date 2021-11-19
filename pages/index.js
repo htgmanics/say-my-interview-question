@@ -33,31 +33,33 @@ export default function Home({ questions }) {
 
 	const playAudio = (e) => {
 		audioRef.current.play();
-		if (!userTriggered) setUserTriggered(true);
 	};
-
+	
 	const pauseAudio = (e) => {
 		audioRef.current.pause();
 	};
-
+	
 	const stopAudio = (e) => {
 		pauseAudio();
 		audioRef.current.currentTime = 0;
 	};
-
+	
 	const replayQuestion = (e) => {
+		if (!userTriggered) setUserTriggered(true);
 		stopAudio();
 		playAudio();
 		setReplayTime((time) => (time < MAX_NUM_REPLAY ? time + 1 : MAX_NUM_REPLAY));
 	};
 
 	const nextQuestion = (e) => {
+		if (!userTriggered) setUserTriggered(true);
 		pauseAudio();
 		setReplayTime(-1);
 		setCurrentIndex((index) => (index < questions.length - 1 ? index + 1 : 0));
 	};
 
 	const prevQuestion = (e) => {
+		if (!userTriggered) setUserTriggered(true);
 		pauseAudio();
 		setReplayTime(-1);
 		setCurrentIndex((index) => (index > 0 ? index - 1 : questions.length - 1));
