@@ -33,6 +33,7 @@ export default function Home({ questions }) {
 
 	const playAudio = (e) => {
 		audioRef.current.play();
+		if (!userTriggered) setUserTriggered(true);
 	};
 
 	const pauseAudio = (e) => {
@@ -45,7 +46,6 @@ export default function Home({ questions }) {
 	};
 
 	const replayQuestion = (e) => {
-		if (!userTriggered) setUserTriggered(true);
 		stopAudio();
 		playAudio();
 		setReplayTime((time) => (time < MAX_NUM_REPLAY ? time + 1 : MAX_NUM_REPLAY));
