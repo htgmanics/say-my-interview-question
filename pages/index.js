@@ -1,27 +1,16 @@
-import { useRef, useState, useEffect, useMemo } from 'react';
+import { useRef, useState, useEffect, useMemo, useCallback } from 'react';
+import { useRaf } from 'rooks';
 import styled from 'styled-components';
-import Head from 'next/head';
-import Image from 'next/image';
+import client from '../services/client';
 import questionData from '../data/data.json';
-import client from '../api/client';
-// useWebAudio (audioRef)
-// rms setRms setState 
-// stream 
-// var audioCtx = new AudioContext();
-// var an = ac.createAnalyser();
-// source = audioCtx.createMediaStreamSource(stream);
-// source.connect(an);
-// 
-// var buffer = new Uint8Array(an.fftSize);
-// 
-// f(){ ... 
-//    setRms()
-// }
-// useRAF pass useCallBack( f() )
-// 
-// return {amplitude}
+import Head from 'next/head';
+import Facade from '../components/elements/home/facade';
+import Controls from '../components/elements/home/controls';
+import Audio from '../components/elements/home/audio';
+import { useWebAudio } from '../components/elements/home/audio';
 
-const shuffledArray = (array) => array.sort(() => 0.5 - Math.random());
+const MAX_NUM_REPLAY = 2;
+
 const Container = styled.div`background-color: #ffe156;`;
 
 const Main = styled.main`
@@ -33,143 +22,48 @@ const Main = styled.main`
 	height: 100%;
 	overflow: hidden;
 `;
-const Facade = styled.div`
-	// position: relative;
-	flex: 2;
-	height: 100%;
-`;
-const Number = styled.div`
-	position: relative;
-	margin-top: -3.5rem;
-	margin-left: 0.75rem;
-	font-size: 10rem;
-	line-height: 1;
-	&:before {
-		content: 'Question';
-		position: absolute;
-		top: 3rem;
-		left: -1.25rem;
-		font-size: 0.75rem;
-		color: #333;
-	}
-`;
-const Question = styled.h1`
-	opacity: ${({ show }) => (show ? '1.0' : '0.0')};
-	${({ show }) => show && `transition: opacity 5.0s ease-out`};
-	height: 60%;
-	overflow-y: auto;
-`;
-const Controls = styled.div`
-	display: flex;
-	width: 100%;
-	padding: 1rem;
-	justify-self: flex-end;
-`;
-const ReplayButton = styled.a`
-	position: absolute;
-	top: 50%;
-	left: 50%;
-	transform: translate(-50%, -50%);
-	display: flex;
-	flex-direction: column;
-	align-self: center;
-	justify-content: center;
-	z-index: 10;
-	visibility: ${({ hide }) => (hide ? 'hidden' : 'visible')};
-	pointer-events: ${({ hide }) => (hide ? 'none' : 'auto')};
-	span {
-		font-size: 1.25rem;
-		align-self: center;
-		transition: all 0.3s ease-out;
-		&:nth-child(2) {
-			margin-top: 0.25rem;
-		}
-	}
-	sub,
-	sup {
-		font-size: 0.5em;
-	}
-	&:active {
-		> span:first-child {
-			transform: scale(0.95);
-		}
-	}
-	@media (hover: hover) {
-		&:hover {
-			> span:first-child {
-				transform: scale(0.95);
-			}
-		}
-		&:active {
-			> span:first-child {
-				transform: scale(0.90);
-			}
-		}
-	}
-`;
-
-const ButtonBase = styled.button`
-	position: absolute;
-	bottom: -4rem;
-	width: 30vh;
-	height: 30vh;
-	font-size: 2rem;
-	border-radius: 50%;
-	background-color: #fff;
-	border: 0;
-	box-shadow: 0 4px 8px rgba(0, 0, 0, 0.12);
-	transform: scale(1.0);
-	will-change: transform;
-	transition: all 0.3s ease-in-out;
-	&:active {
-		background-color: #333;
-		color: #fff;
-		transform: scale(1.5);
-	}
-	@media (hover: hover) {
-		&:hover {
-			background-color: #333;
-			color: #fff;
-			transform: scale(1.5);
-		}
-	}
-`;
-const PrevButton = styled(ButtonBase)`
-  left: -4rem;
-`;
-const NextButton = styled(ButtonBase)`
-  right: -4rem;
-`;
 
 export default function Home({ questions }) {
 	const audioRef = useRef();
+	const [ userTriggered, setUserTriggered ] = useState(false);
 	const [ currentIndex, setCurrentIndex ] = useState(0);
-	const [ currentQuestion, setCurrentQuestion ] = useState(questions[0]);
 	const [ replayTime, setReplayTime ] = useState(-1);
-	const MAX_NUM_REPLAY = 3;
-	// console.log(styles);
+	const currentQuestion = useMemo(() => questions[currentIndex], [ currentIndex ]);
+	const isReplayLimitReached = useMemo(() => replayTime >= MAX_NUM_REPLAY, [ replayTime, MAX_NUM_REPLAY ]);
+
 	const playAudio = (e) => {
 		audioRef.current.play();
 	};
+
 	const pauseAudio = (e) => {
 		audioRef.current.pause();
 	};
+
 	const stopAudio = (e) => {
 		pauseAudio();
 		audioRef.current.currentTime = 0;
 	};
+
 	const replayQuestion = (e) => {
+		if (!userTriggered) setUserTriggered(true);
 		stopAudio();
 		playAudio();
 		setReplayTime((time) => (time < MAX_NUM_REPLAY ? time + 1 : MAX_NUM_REPLAY));
 	};
+
 	const nextQuestion = (e) => {
+		pauseAudio();
+		setReplayTime(-1);
 		setCurrentIndex((index) => (index < questions.length - 1 ? index + 1 : 0));
 	};
+
 	const prevQuestion = (e) => {
+		pauseAudio();
+		setReplayTime(-1);
 		setCurrentIndex((index) => (index > 0 ? index - 1 : questions.length - 1));
 	};
 
+	// next vh 100%
 	useEffect(() => {
 		const appHeight = () => {
 			const doc = document.documentElement;
@@ -183,21 +77,17 @@ export default function Home({ questions }) {
 		};
 	}, []);
 
-	useEffect(
-		() => {
-			pauseAudio();
-			setReplayTime(-1);
-			setCurrentQuestion(questions[currentIndex]);
-		},
-		[ currentIndex ]
-	);
-
+	// play audio when the current question is changed
 	useEffect(
 		() => {
 			playAudio();
 		},
 		[ currentQuestion ]
 	);
+
+	// setup audio context to calculate the amplitude
+	const { amplitude, calculateAmplitude } = useWebAudio(audioRef.current, userTriggered);
+	useRaf(calculateAmplitude, userTriggered);	// use requestAnimationFrame to calucalte current amplitude
 
 	return (
 		<Container>
@@ -210,48 +100,39 @@ export default function Home({ questions }) {
 					rel="stylesheet"
 				/>
 			</Head>
-
 			<Main>
-				<Facade>
-					<Number>/{currentQuestion.number}</Number>
-					<Question show={replayTime >= MAX_NUM_REPLAY}>{currentQuestion.title}</Question>
-					{replayTime < MAX_NUM_REPLAY && (
-						<ReplayButton hide={false} onClick={replayQuestion}>
-							<Image src="/play.svg" height={100} width={100} />
-							<span>{replayTime === -1 ? `play` : `replayed`}</span>
-							<span>
-								<sup>{replayTime + 1} time</sup>
-							</span>
-						</ReplayButton>
-					)}
-				</Facade>
-				<Controls>
-					<PrevButton onClick={prevQuestion}>\\ Prev</PrevButton>
-					<NextButton onClick={nextQuestion}>Next //</NextButton>
-				</Controls>
-				{/* <audio ref={audioRef} src={`/audios/question-${currentQuestion.id}.mp3`} /> */}
-				<audio ref={audioRef} src={currentQuestion.file} />
+				<Facade
+					currentQuestion={currentQuestion}
+					amplitude={amplitude}
+					replayTime={replayTime}
+					onReplayButtonClick={replayQuestion}
+					isReplayLimitReached={isReplayLimitReached}
+				/>
+				<Controls onPrevButtonClick={prevQuestion} onNextButtonClick={nextQuestion} />
+				<Audio ref={audioRef} src={currentQuestion.src} />
 			</Main>
 		</Container>
 	);
 }
+
+const shuffledArray = (array) => array.sort(() => 0.5 - Math.random());
 
 export async function getStaticProps() {
 	const query = `
 		*[_type == "post"]{
 			"id": _id,
 			"slug": slug.current,
-			"file": manuscript.asset->url,
+			"src": manuscript.asset->url,
 			"title": description
 		}
 	`;
 	const fetchedQuestions = await client.fetch(query);
-	const fetchedQuestionsWithNumber = fetchedQuestions.map((q, i) => ({ ...q, number: q.slug.split('-')[1]  }));
-	console.log(fetchedQuestionsWithNumber);
-
+	const fetchedQuestionsWithNumber = fetchedQuestions.map((q, i) => ({ ...q, number: q.slug.split('-')[1] }));
+	// const localData = questionData.data.map((q, i) => ({ ...q, number: i, src: `/audios/question-${i}.mp3` }));
 	return {
 		props: {
-			questions: shuffledArray(fetchedQuestionsWithNumber) // questionData.data)
+			questions: shuffledArray(fetchedQuestionsWithNumber)
+			// questions: shuffledArray(localData)
 		}
 	};
 }
