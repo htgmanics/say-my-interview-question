@@ -1,17 +1,19 @@
 import React, { useEffect, useState, useCallback } from 'react';
 
-export const useWebAudio = (audio, userTriggered) => {
+export const useWebAudio = (audio, userTriggered, isSafari) => {
 	const [ amplitude, setAmplitude ] = useState(0);
 	const [ audioCtx, setAudioCtx ] = useState();
 	const [ source, setSource ] = useState();
 	const [ analyser, setAnalyser ] = useState();
+	
+	if (isSafari) return { amplitude: 128, calculateAmplitude: () => {} };
 
 	useEffect(
 		() => {
 			if (!userTriggered) return;
 
 			const newAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
-			const newSource = newAudioCtx.createMediaElementSource(audio);
+			const newSource = newAudioCtx.createMediaElementSource(audio.current);
 			const newAnalyser = newAudioCtx.createAnalyser();
 
 			newAnalyser.fftSize = 64;
@@ -58,5 +60,5 @@ export const useWebAudio = (audio, userTriggered) => {
 };
 
 export default React.forwardRef(function Audio({ src }, ref) {
-	return <audio ref={ref} src={src} crossOrigin="anonymous" />;
+	return <audio ref={ref} src={src} preload="auto" crossOrigin="anonymous" />;
 });

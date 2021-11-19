@@ -1,5 +1,6 @@
 import { useRef, useState, useEffect, useMemo, useCallback } from 'react';
 import { useRaf } from 'rooks';
+import { isSafari, browserName, browserVersion } from 'react-device-detect';
 import styled from 'styled-components';
 import client from '../services/client';
 import questionData from '../data/data.json';
@@ -34,16 +35,16 @@ export default function Home({ questions }) {
 	const playAudio = (e) => {
 		audioRef.current.play();
 	};
-	
+
 	const pauseAudio = (e) => {
 		audioRef.current.pause();
 	};
-	
+
 	const stopAudio = (e) => {
 		pauseAudio();
 		audioRef.current.currentTime = 0;
 	};
-	
+
 	const replayQuestion = (e) => {
 		if (!userTriggered) setUserTriggered(true);
 		stopAudio();
@@ -82,14 +83,14 @@ export default function Home({ questions }) {
 	// play audio when the current question is changed
 	useEffect(
 		() => {
-			playAudio();
+			if (userTriggered) playAudio();
 		},
 		[ currentQuestion ]
 	);
 
-	// setup audio context to calculate the amplitude
-	const { amplitude, calculateAmplitude } = useWebAudio(audioRef.current, userTriggered);
-	useRaf(calculateAmplitude, userTriggered);	// use requestAnimationFrame to calucalte current amplitude
+	// setup audio context to calculate the amplitude (skip function for safari)
+	const { amplitude, calculateAmplitude } = useWebAudio(audioRef, userTriggered, isSafari);
+	useRaf(calculateAmplitude, userTriggered || isSafari); // use requestAnimationFrame to calucalte current amplitude
 
 	return (
 		<Container>

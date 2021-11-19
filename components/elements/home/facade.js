@@ -6,7 +6,7 @@ const ThemedFacade = styled.div`
 	flex: 2;
 	height: 100%;
 `;
-const Background = styled.div.attrs(({ amplitude }) => ({
+const Background = styled.div.attrs(({ amplitude = 0 }) => ({
 	style: {
 		backgroundColor: `rgb(255, ${amplitude}, 86)`
 	}
