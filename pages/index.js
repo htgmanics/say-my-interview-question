@@ -89,9 +89,11 @@ export default function Home({ questions }) {
 	);
 
 	// setup audio context to calculate the amplitude (skip function for safari)
-	const { amplitude, calculateAmplitude } = useWebAudio(audioRef, userTriggered, isSafari);
-	useRaf(calculateAmplitude, userTriggered || isSafari); // use requestAnimationFrame to calucalte current amplitude
+	// const { amplitude, calculateAmplitude } = useWebAudio(audioRef, userTriggered, isSafari);
+	// useRaf(calculateAmplitude, userTriggered || isSafari); // use requestAnimationFrame to calucalte current amplitude
 
+	const amplitude = 128;
+	
 	return (
 		<Container>
 			<Head>
